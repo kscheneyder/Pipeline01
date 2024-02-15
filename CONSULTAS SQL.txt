@@ -12,27 +12,9 @@ where bbd.bebida = 'Cerveja'
 and cli.clima = 'quente'
 group by pes.genero
 
-Resposta = 48.000
-
 -------------------------------------------------------------------------------------------------------------------------------
 
 Qual é a proporção entre homens e mulheres que têm afinidade por cachorros e cultivam o hábito de ler livros?
-Masculino = 32/50 = 0,64
-Feminino = 18/50 = 0,36
-
-SELECT pes.genero, count(pes.genero) as proporcao
-from pessoa as pes
-join pesquisa as psq
-on pes.cod_pessoa = psq.cod_pessoa
-join animal_estimacao as ani
-on ani.cod_animal_estimacao = psq.cod_animal_estimacao
-join hobbie as hob
-on psq.cod_hobbie = hob.cod_hobbie
-where hob.hobbie = 'Ler livros'
-and ani.animal = 'cachorro'
-group by pes.genero
-
-ou proporção dividido pelo numero total de masculino/feminino
 
 SELECT 
     pes.genero,
@@ -80,9 +62,6 @@ order by hobbies_homens
 
 -------------------------------------------------------------------------------------------------------------------------------
 Qual é a bebida favorita tanto entre mulheres quanto entre homens?
-
-Mulher = Cerveja
-Homem = Café
 
 SELECT bbd.bebida, count(pes.genero) as bebida_favorita
 FROM pessoa as pes
@@ -147,8 +126,6 @@ order by total_pessoas
 -------------------------------------------------------------------------------------------------------------------------------
 
 Qual é a desvio padrão de idade das pessoas que têm o hábito de assistir TV como hobby?
-
-DESVIO = 14.34426 
 
 SELECT hob.hobbie, STDDEV_SAMP(pes.idade) as desvio_padrao_idade
 FROM pessoa as pes
