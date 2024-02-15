@@ -1,0 +1,160 @@
+Qual é a idade média dos homens que têm preferência por cerveja e clima quente?
+
+SELECT pes.genero, avg(pes.idade) as media_idade
+from pessoa as pes
+join pesquisa as psq
+on pes.cod_pessoa = psq.cod_pessoa
+join bebida as bbd
+on bbd.cod_bebida = psq.cod_bebida
+join clima as cli
+on psq.cod_clima = cli.cod_clima
+where bbd.bebida = 'Cerveja'
+and cli.clima = 'quente'
+group by pes.genero
+
+Resposta = 48.000
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+Qual é a proporção entre homens e mulheres que têm afinidade por cachorros e cultivam o hábito de ler livros?
+Masculino = 32/50 = 0,64
+Feminino = 18/50 = 0,36
+
+SELECT pes.genero, count(pes.genero) as proporcao
+from pessoa as pes
+join pesquisa as psq
+on pes.cod_pessoa = psq.cod_pessoa
+join animal_estimacao as ani
+on ani.cod_animal_estimacao = psq.cod_animal_estimacao
+join hobbie as hob
+on psq.cod_hobbie = hob.cod_hobbie
+where hob.hobbie = 'Ler livros'
+and ani.animal = 'cachorro'
+group by pes.genero
+
+ou proporção dividido pelo numero total de masculino/feminino
+
+SELECT 
+    pes.genero,
+    COUNT(pes.genero) AS total_por_genero,
+    COUNT(CASE WHEN hob.hobbie = 'Ler livros' AND ani.animal = 'cachorro' THEN 1 END) AS total_atendem_condicoes,
+    COUNT(CASE WHEN hob.hobbie = 'Ler livros' AND ani.animal = 'cachorro' THEN 1 END) / COUNT(pes.genero) AS proporcao
+FROM 
+    pessoa AS pes
+JOIN 
+    pesquisa AS psq ON pes.cod_pessoa = psq.cod_pessoa
+JOIN 
+    animal_estimacao AS ani ON ani.cod_animal_estimacao = psq.cod_animal_estimacao
+JOIN 
+    hobbie AS hob ON psq.cod_hobbie = hob.cod_hobbie
+GROUP BY 
+    pes.genero;
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+Qual é a segunda opção de animal de estimação mais preferida entre as mulheres?
+
+SELECT ani.animal, count(ani.animal) as total_por_mulheres
+FROM animal_estimacao as ani
+join pesquisa as psq
+on psq.cod_animal_estimacao = ani.cod_animal_estimacao
+join pessoa as pes
+on pes.cod_pessoa = psq.cod_pessoa
+where pes.genero = 'Feminino'
+group by ani.animal
+order by total_por_mulheres
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+Qual é o hobbie menos preferido entre o público masculino?
+
+SELECT hob.hobbie, count(hob.hobbie) as hobbies_homens
+FROM hobbie as hob
+join pesquisa as psq
+on psq.cod_hobbie = hob.cod_hobbie
+join pessoa as pes
+on pes.cod_pessoa = psq.cod_pessoa
+where pes.genero = 'Masculino'
+group by hob.hobbie
+order by hobbies_homens
+
+-------------------------------------------------------------------------------------------------------------------------------
+Qual é a bebida favorita tanto entre mulheres quanto entre homens?
+
+Mulher = Cerveja
+Homem = Café
+
+SELECT bbd.bebida, count(pes.genero) as bebida_favorita
+FROM pessoa as pes
+join pesquisa as psq
+on psq.cod_pessoa = pes.cod_pessoa
+join bebida as bbd
+on bbd.cod_bebida = psq.cod_bebida
+where pes.genero = 'Masculino'
+group by bbd.bebida
+order by bebida_favorita
+
+
+SELECT bbd.bebida, count(pes.genero) as bebida_favorita
+FROM pessoa as pes
+join pesquisa as psq
+on psq.cod_pessoa = pes.cod_pessoa
+join bebida as bbd
+on bbd.cod_bebida = psq.cod_bebida
+where pes.genero = 'Feminino'
+group by bbd.bebida
+order by bebida_favorita
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+Qual é o animal de estimação menos preferido entre as mulheres e quantas mulheres fazem parte desse grupo?
+
+SELECT ani.animal, count(pes.genero) as animal_mulheres
+FROM pessoa as pes
+join pesquisa as psq
+on psq.cod_pessoa = pes.cod_pessoa
+join animal_estimacao as ani
+on ani.cod_animal_estimacao = psq.cod_animal_estimacao
+where pes.genero = 'Feminino'
+group by ani.animal
+order by animal_mulheres
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+Qual é a soma total de pessoas que têm preferência por gatos ou cachorros?
+
+SELECT ani.animal, count(pes.cod_pessoa) as total_pessoas
+FROM pessoa as pes
+join pesquisa as psq
+on psq.cod_pessoa = pes.cod_pessoa
+join animal_estimacao as ani
+on psq.cod_animal_estimacao = ani.cod_animal_estimacao
+where ani.animal = 'cachorro'
+or ani.animal = 'gato'
+group by ani.animal
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+Qual é o clima com a preferência mais alta entre o público entrevistado?
+
+SELECT cli.clima, count(cli.clima) as total_pessoas
+FROM clima as cli
+join pesquisa as psq
+on psq.cod_clima = cli.cod_clima
+group by cli.clima
+order by total_pessoas
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+Qual é a desvio padrão de idade das pessoas que têm o hábito de assistir TV como hobby?
+
+DESVIO = 14.34426 
+
+SELECT hob.hobbie, STDDEV_SAMP(pes.idade) as desvio_padrao_idade
+FROM pessoa as pes
+join pesquisa as psq
+on pes.cod_pessoa = psq.cod_pessoa
+join hobbie as hob
+on hob.cod_hobbie = psq.cod_hobbie
+where hob.hobbie = 'Assistir TV'
+group by hob.hobbie
